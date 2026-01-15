@@ -16,6 +16,13 @@ main{padding:12px 16px}
 .zoomCtrl{display:flex;gap:8px;align-items:center}
 .zoomCtrl button{padding:4px 8px;border:1px solid #aaa;background:#fff}
 .canvasWrap{background:#f3f4f6;max-height:90vh;min-height:70vh;overflow:auto}
+#wrapA, #wrapB {position:relative}
+.canvasWrap{position:relative}
+.canvasWrap #overlayA,
+.canvasWrap #overlayB{
+  position:absolute;left:0;top:0;
+  pointer-events:none;
+}
 canvas{background:#dcdcdc;display:block}
 .paneFooter{display:flex;gap:16px;padding:8px 10px;background:#fafbfc;border-top:1px solid #e6e8eb;font-size:14px}
 .logSect{margin-top:12px}

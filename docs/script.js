@@ -15,6 +15,8 @@ const el={
   canvasB:()=>document.getElementById('canvasB'),
   wrapA:()=>document.getElementById('wrapA'),
   wrapB:()=>document.getElementById('wrapB'),
+  overlayA:()=>document.getElementById('overlayA'),
+  overlayB:()=>document.getElementById('overlayB'),
   pointsA:()=>document.getElementById('pointsA'),
   pointsB:()=>document.getElementById('pointsB'),
   distX:()=>document.getElementById('distX'),
@@ -52,6 +54,7 @@ function redrawA(){
   dispA=setCanvasImage(c,state.imgA,state.zoomA)
   drawPointsAndShapes(c,state.pointsA,dispA,true)
   el.zoomLabelA().textContent=`縮放: ${Math.round(state.zoomA*100)}% | Zoom: ${Math.round(state.zoomA*100)}%`
+  const ov=el.overlayA(); ov.width=c.width; ov.height=c.height; ov.getContext('2d').clearRect(0,0,ov.width,ov.height)
 }
 function redrawB(){
   const c=el.canvasB()
@@ -59,6 +62,7 @@ function redrawB(){
   dispB=setCanvasImage(c,state.imgB,state.zoomB)
   drawPointsAndShapes(c,state.pointsB,dispB,false)
   el.zoomLabelB().textContent=`縮放: ${Math.round(state.zoomB*100)}% | Zoom: ${Math.round(state.zoomB*100)}%`
+  const ov=el.overlayB(); ov.width=c.width; ov.height=c.height; ov.getContext('2d').clearRect(0,0,ov.width,ov.height)
 }
 function imgToCanvasCoord(origX,origY,disp){
   return {x:origX*disp.ratio,y:origY*disp.ratio}
@@ -233,6 +237,10 @@ function init(){
     const p=canvasToImgCoord(cx,cy,dispA)
     const unit=state.scaleValue>0?state.unit:"px"
     el.coordA().textContent=`鼠標坐標 (A): (${p.x.toFixed(1)}, ${p.y.toFixed(1)}) (${unit}) | Mouse Coords (A)`
+    drawCrosshair(el.overlayA(),cx,cy)
+  })
+  el.canvasA().addEventListener('mouseleave',()=>{
+    const ov=el.overlayA(); if(ov){const ctx=ov.getContext('2d'); ctx.clearRect(0,0,ov.width,ov.height)}
   })
   el.canvasA().addEventListener('click',e=>{
     if(!state.imgA||!dispA)return
@@ -260,6 +268,15 @@ function init(){
     redrawB()
     if(state.pointsB.length===2)log("請輸入實際距離並設定比例尺 | Enter actual distance and set scale")
   })
+  el.canvasB().addEventListener('mousemove',e=>{
+    if(!state.imgB||!dispB)return
+    const rect=el.canvasB().getBoundingClientRect()
+    const cx=e.clientX-rect.left,cy=e.clientY-rect.top
+    drawCrosshair(el.overlayB(),cx,cy)
+  })
+  el.canvasB().addEventListener('mouseleave',()=>{
+    const ov=el.overlayB(); if(ov){const ctx=ov.getContext('2d'); ctx.clearRect(0,0,ov.width,ov.height)}
+  })
   log("Application started")
   enableDragScroll(el.wrapA())
   enableDragScroll(el.wrapB())
@@ -282,4 +299,18 @@ function toggleFullscreen(){
   el.toggleFullBtn().textContent=isFs?"退出全屏 Exit Fullscreen":"全屏檢視 Fullscreen"
   if(state.imgA) redrawA()
   if(state.imgB) redrawB()
+}
+function drawCrosshair(overlayCanvas,cx,cy){
+  if(!overlayCanvas)return
+  const ctx=overlayCanvas.getContext('2d')
+  ctx.clearRect(0,0,overlayCanvas.width,overlayCanvas.height)
+  ctx.save()
+  ctx.strokeStyle='gray'
+  ctx.setLineDash([4,4])
+  ctx.lineWidth=1
+  ctx.beginPath()
+  ctx.moveTo(0,cy); ctx.lineTo(overlayCanvas.width,cy)
+  ctx.moveTo(cx,0); ctx.lineTo(cx,overlayCanvas.height)
+  ctx.stroke()
+  ctx.restore()
 }
