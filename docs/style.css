@@ -1,115 +1,279 @@
+/* ==========================================
+   圖像距離與圓直徑測量工具 v3.0 - 優化版樣式
+   Image Distance & Circle Tool v3.0 - Optimized Styles
+   ========================================== */
+
+/* === 基礎設置 === */
 * {
-  box-sizing: border-box
+  box-sizing: border-box;
 }
 
 html,
 body {
   height: 100%;
   margin: 0;
-  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+  color: #333;
 }
 
+/* === 頁首區域 === */
 header {
-  padding: 12px 16px;
-  background: #f5f7fa;
-  border-bottom: 1px solid #e6e8eb
+  padding: 16px 20px;
+  background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 100%);
+  border-bottom: 2px solid #d1d5db;
 }
 
 header h1 {
   margin: 0;
-  color: #0b61a4;
-  font-weight: 600
+  color: #0a4d7a;
+  font-weight: 600;
+  font-size: 28px;
+  line-height: 1.3;
+  letter-spacing: -0.5px;
 }
 
 header h2 {
-  margin: 4px 0 0;
-  color: #2e7d32;
+  margin: 6px 0 0;
+  color: #1b5e20;
   font-weight: 500;
-  font-size: 16px
+  font-size: 18px;
+  line-height: 1.4;
+  letter-spacing: 0.2px;
 }
 
+/* === 主內容區域 === */
 main {
-  padding: 12px 16px
+  padding: 16px 20px;
+  max-width: 100%;
 }
 
+/* === 控制區域 === */
 .controls {
   display: grid;
   grid-template-columns: 1fr 1fr auto;
-  gap: 12px;
+  gap: 16px;
   align-items: center;
-  margin-bottom: 8px
+  margin-bottom: 12px;
+  padding: 12px 16px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
 }
 
 .controls .mode,
 .controls .scale,
 .controls .actions {
   display: flex;
-  gap: 8px;
-  align-items: center
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
 }
 
-.controls input[type=number] {
+.controls label {
+  font-size: 15px;
+  font-weight: 500;
+  color: #333;
+  cursor: pointer;
+  user-select: none;
+}
+
+.controls input[type="radio"] {
+  cursor: pointer;
+  margin-right: 4px;
+}
+
+.controls input[type="number"] {
   width: 120px;
-  padding: 6px
+  padding: 8px 12px;
+  border: 1px solid #cbd5e0;
+  border-radius: 6px;
+  font-size: 15px;
+  transition: all 0.2s ease;
+}
+
+.controls input[type="number"]:focus {
+  outline: none;
+  border-color: #0b61a4;
+  box-shadow: 0 0 0 3px rgba(11, 97, 164, 0.1);
 }
 
 .controls select {
-  padding: 6px
+  padding: 8px 12px;
+  border: 1px solid #cbd5e0;
+  border-radius: 6px;
+  font-size: 15px;
+  background: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.controls select:focus {
+  outline: none;
+  border-color: #0b61a4;
+  box-shadow: 0 0 0 3px rgba(11, 97, 164, 0.1);
 }
 
 .controls button {
-  padding: 6px 10px;
-  border: 1px solid #aaa;
+  padding: 8px 16px;
+  border: 1px solid #999;
   background: #fff;
-  cursor: pointer
+  color: #333;
+  font-size: 14px;
+  font-weight: 500;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
 }
 
 .controls button:hover {
-  background: #f0f0f0
+  background: #e8eaed;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
+.controls button:active {
+  transform: translateY(0);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+/* 特殊按鈕樣式 */
+#setScaleBtn {
+  background: #e3f2fd;
+  border-color: #2196f3;
+  color: #0d47a1;
+}
+
+#setScaleBtn:hover {
+  background: #bbdefb;
+}
+
+#resetBtn {
+  background: #fff3e0;
+  border-color: #ff9800;
+  color: #e65100;
+}
+
+#resetBtn:hover {
+  background: #ffe0b2;
+}
+
+#toggleFullBtn {
+  background: #f3e5f5;
+  border-color: #9c27b0;
+  color: #6a1b9a;
+}
+
+#toggleFullBtn:hover {
+  background: #e1bee7;
+}
+
+#scaleDisplay {
+  font-size: 14px;
+  color: #555;
+  font-weight: 500;
+  padding: 4px 8px;
+  background: #e8f5e9;
+  border-radius: 4px;
+}
+
+/* === 面板區域 === */
 .panes {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 6px
+  gap: 12px;
+  margin-bottom: 16px;
 }
 
 .pane {
   border: 1px solid #e1e3e6;
   border-radius: 8px;
   overflow: hidden;
-  background: #fff
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transition: box-shadow 0.3s ease;
+}
+
+.pane:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
 }
 
 .paneHeader {
   display: flex;
-  gap: 8px;
+  gap: 12px;
   align-items: center;
   justify-content: space-between;
-  padding: 8px 10px;
+  padding: 12px 14px;
   background: #fafbfc;
   border-bottom: 1px solid #e6e8eb;
-  flex-wrap: wrap
+  flex-wrap: wrap;
 }
 
+.paneHeader label {
+  font-size: 15px;
+  font-weight: 600;
+  color: #333;
+  margin: 0;
+}
+
+.paneHeader input[type="file"] {
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.paneHeader span {
+  font-size: 14px;
+  color: #555;
+  font-weight: 500;
+}
+
+/* === 縮放控制 === */
 .zoomCtrl {
   display: flex;
   gap: 8px;
-  align-items: center
+  align-items: center;
 }
 
 .zoomCtrl button {
-  padding: 4px 8px;
+  padding: 6px 12px;
   border: 1px solid #aaa;
-  background: #fff
+  background: #fff;
+  font-size: 13px;
+  font-weight: 500;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
+.zoomCtrl button:hover {
+  background: #e8eaed;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.zoomCtrl button:active {
+  transform: translateY(0);
+}
+
+.zoomCtrl span {
+  font-size: 14px;
+  font-weight: 500;
+  color: #555;
+  min-width: 100px;
+}
+
+/* === Canvas 區域 === */
 .canvasWrap {
   background: #f3f4f6;
   max-height: 90vh;
   min-height: 70vh;
   overflow: auto;
   position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 #wrapA,
@@ -130,44 +294,74 @@ main {
 canvas {
   background: #dcdcdc;
   display: block;
+  cursor: crosshair;
 }
 
+/* === 面板頁腳 === */
 .paneFooter {
   display: flex;
-  gap: 16px;
-  padding: 8px 10px;
+  gap: 20px;
+  padding: 10px 14px;
   background: #fafbfc;
   border-top: 1px solid #e6e8eb;
-  font-size: 14px
+  font-size: 15px;
+  line-height: 1.5;
+  flex-wrap: wrap;
 }
 
+.paneFooter span {
+  color: #444;
+  font-weight: 500;
+}
+
+/* === 日誌區域 === */
 .logSect {
-  margin-top: 12px
+  margin-top: 16px;
+}
+
+.logSect h3 {
+  margin: 0 0 8px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
 }
 
 .logSect textarea {
   width: 100%;
-  height: 100px;
-  padding: 8px;
+  min-height: 120px;
+  padding: 12px;
   border: 1px solid #ccd0d5;
   border-radius: 6px;
   resize: vertical;
-  background: #fefefe
+  background: #fefefe;
+  font-size: 13px;
+  line-height: 1.6;
+  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+  color: #333;
 }
 
+.logSect textarea:focus {
+  outline: none;
+  border-color: #0b61a4;
+  box-shadow: 0 0 0 3px rgba(11, 97, 164, 0.1);
+}
+
+/* === 頁腳 === */
 footer {
   display: flex;
   justify-content: flex-end;
   align-items: center;
-  padding: 8px 16px;
-  border-top: 1px solid #e6e8eb
+  padding: 12px 20px;
+  border-top: 1px solid #e6e8eb;
+  background: #fafbfc;
 }
 
 footer .author {
   display: flex;
   gap: 8px;
   align-items: center;
-  color: #555
+  color: #555;
+  font-size: 14px;
 }
 
 footer img {
@@ -176,30 +370,172 @@ footer img {
   border-radius: 4px;
   object-fit: cover;
   background: #fff;
-  border: 1px solid #ddd
+  border: 1px solid #ddd;
 }
 
+/* === 全屏模式 === */
 body.fullscreen header {
-  display: none
+  display: none;
 }
 
 body.fullscreen .controls {
-  display: none
+  display: none;
 }
 
 body.fullscreen .paneFooter {
-  display: none
+  display: none;
 }
 
 body.fullscreen .logSect {
-  display: none
+  display: none;
 }
 
 body.fullscreen footer {
-  display: none
+  display: none;
 }
 
 body.fullscreen .canvasWrap {
   max-height: 94vh;
-  min-height: 90vh
+  min-height: 90vh;
+}
+
+/* === 響應式設計 === */
+@media (max-width: 1200px) {
+  header h1 {
+    font-size: 24px;
+  }
+
+  header h2 {
+    font-size: 16px;
+  }
+
+  .controls {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .controls .mode,
+  .controls .scale,
+  .controls .actions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 768px) {
+  header {
+    padding: 12px 16px;
+  }
+
+  header h1 {
+    font-size: 20px;
+  }
+
+  header h2 {
+    font-size: 14px;
+  }
+
+  main {
+    padding: 12px 16px;
+  }
+
+  .controls {
+    padding: 10px 12px;
+  }
+
+  .controls button {
+    padding: 10px 14px;
+    font-size: 13px;
+  }
+
+  .panes {
+    grid-template-columns: 1fr;
+  }
+
+  .paneHeader {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .zoomCtrl {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .paneFooter {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .canvasWrap {
+    min-height: 50vh;
+  }
+}
+
+/* 高分辨率螢幕優化 */
+@media (min-width: 1920px) {
+  header h1 {
+    font-size: 32px;
+  }
+
+  header h2 {
+    font-size: 20px;
+  }
+
+  .controls label,
+  .paneHeader label {
+    font-size: 16px;
+  }
+
+  .paneFooter {
+    font-size: 16px;
+  }
+
+  .controls button {
+    font-size: 15px;
+    padding: 9px 18px;
+  }
+}
+
+/* === 可訪問性增強 === */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* 高對比度模式 */
+@media (prefers-contrast: high) {
+
+  .controls,
+  .pane {
+    border-width: 2px;
+  }
+
+  .controls button,
+  .zoomCtrl button {
+    border-width: 2px;
+  }
+}
+
+/* === 打印樣式 === */
+@media print {
+
+  header,
+  .controls,
+  .logSect,
+  footer {
+    display: none;
+  }
+
+  .panes {
+    grid-template-columns: 1fr;
+  }
+
+  .canvasWrap {
+    max-height: none;
+    min-height: auto;
+  }
 }
