@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>圖像距離與圓直徑測量工具 v3.0 Web</title>
+  <link rel="icon" href="../app_icon.ico">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>圖像距離與圓直徑測量工具 v3.0</h1>
+    <h2>Image Distance & Circle Tool v3.0 (Web)</h2>
+  </header>
+  <main>
+    <section class="controls">
+      <div class="mode">
+        <label>模式 Mode</label>
+        <label><input type="radio" name="mode" value="line" checked> 直線測量 Line</label>
+        <label><input type="radio" name="mode" value="circle"> 直徑畫圓 Circle</label>
+      </div>
+      <div class="scale">
+        <label>實際距離 Actual</label>
+        <input id="actualDist" type="number" step="0.0001" placeholder="數值">
+        <select id="unitSel">
+          <option value="mm">mm</option>
+          <option value="cm">cm</option>
+          <option value="m">m</option>
+          <option value="inch">inch</option>
+          <option value="µm">µm</option>
+          <option value="pixel">pixel</option>
+        </select>
+        <button id="setScaleBtn">設比例尺 Set Scale</button>
+        <span id="scaleDisplay">比例尺: 未設定 | Scale: Not Set</span>
+      </div>
+      <div class="actions">
+        <button id="resetBtn">重置 Reset</button>
+        <button id="clearA">清除點 (A)</button>
+        <button id="clearB">清除點 (B)</button>
+      </div>
+    </section>
+
+    <section class="panes">
+      <div class="pane" id="paneA">
+        <div class="paneHeader">
+          <label>加載待測圖片 (A) | Load Image (A)</label>
+          <input id="fileA" type="file" accept="image/*">
+          <span id="coordA">鼠標坐標 (A): --- | Mouse Coord (A): ---</span>
+        </div>
+        <div class="canvasWrap">
+          <canvas id="canvasA"></canvas>
+        </div>
+        <div class="paneFooter">
+          <span id="pointsA">已選點 (A): 0 | Selected Points (A): 0</span>
+          <span id="distX">水平距離: --- | Horiz Dist: ---</span>
+          <span id="distY">垂直距離: --- | Vert Dist: ---</span>
+        </div>
+      </div>
+
+      <div class="pane" id="paneB">
+        <div class="paneHeader">
+          <label>加載尺規圖片 (B) | Load Ruler (B)</label>
+          <input id="fileB" type="file" accept="image/*">
+        </div>
+        <div class="canvasWrap">
+          <canvas id="canvasB"></canvas>
+        </div>
+        <div class="paneFooter">
+          <span id="pointsB">已選點 (B): 0 | Selected Points (B): 0</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="logSect">
+      <h3>操作日誌 | Operation Log</h3>
+      <textarea id="logBox" readonly></textarea>
+    </section>
+  </main>
+
+  <footer>
+    <div class="author">
+      <img id="avatar" src="../author_avatar.png" alt="author">
+      <span>作者: Wesley Chang, 2025-May</span>
+    </div>
+  </footer>
+  <script src="script.js"></script>
+</body>
+<style>
+</style>
+</html>
