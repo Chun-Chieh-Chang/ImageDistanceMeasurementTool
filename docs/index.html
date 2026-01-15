@@ -46,8 +46,14 @@
           <label>加載待測圖片 (A) | Load Image (A)</label>
           <input id="fileA" type="file" accept="image/*">
           <span id="coordA">鼠標坐標 (A): --- | Mouse Coord (A): ---</span>
+          <div class="zoomCtrl">
+            <button id="zoomInA">放大 +</button>
+            <button id="zoomOutA">縮小 -</button>
+            <button id="zoomResetA">重置縮放</button>
+            <span id="zoomLabelA">縮放: 100% | Zoom: 100%</span>
+          </div>
         </div>
-        <div class="canvasWrap">
+        <div class="canvasWrap" id="wrapA">
           <canvas id="canvasA"></canvas>
         </div>
         <div class="paneFooter">
@@ -61,8 +67,14 @@
         <div class="paneHeader">
           <label>加載尺規圖片 (B) | Load Ruler (B)</label>
           <input id="fileB" type="file" accept="image/*">
+          <div class="zoomCtrl">
+            <button id="zoomInB">放大 +</button>
+            <button id="zoomOutB">縮小 -</button>
+            <button id="zoomResetB">重置縮放</button>
+            <span id="zoomLabelB">縮放: 100% | Zoom: 100%</span>
+          </div>
         </div>
-        <div class="canvasWrap">
+        <div class="canvasWrap" id="wrapB">
           <canvas id="canvasB"></canvas>
         </div>
         <div class="paneFooter">

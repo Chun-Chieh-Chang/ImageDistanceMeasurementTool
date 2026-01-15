@@ -1,10 +1,4 @@
-const state={
-  mode:"line",
-  scaleValue:0,
-  unit:"mm",
-  imgA:null,imgB:null,
-  pointsA:[],pointsB:[]
-}
+const state={mode:"line",scaleValue:0,unit:"mm",imgA:null,imgB:null,pointsA:[],pointsB:[],zoomA:1.0,zoomB:1.0}
 const el={
   modeInputs:()=>document.querySelectorAll('input[name="mode"]'),
   actualDist:()=>document.getElementById('actualDist'),
@@ -18,43 +12,52 @@ const el={
   fileB:()=>document.getElementById('fileB'),
   canvasA:()=>document.getElementById('canvasA'),
   canvasB:()=>document.getElementById('canvasB'),
+  wrapA:()=>document.getElementById('wrapA'),
+  wrapB:()=>document.getElementById('wrapB'),
   pointsA:()=>document.getElementById('pointsA'),
   pointsB:()=>document.getElementById('pointsB'),
   distX:()=>document.getElementById('distX'),
   distY:()=>document.getElementById('distY'),
   coordA:()=>document.getElementById('coordA'),
-  logBox:()=>document.getElementById('logBox')
+  logBox:()=>document.getElementById('logBox'),
+  zoomInA:()=>document.getElementById('zoomInA'),
+  zoomOutA:()=>document.getElementById('zoomOutA'),
+  zoomResetA:()=>document.getElementById('zoomResetA'),
+  zoomLabelA:()=>document.getElementById('zoomLabelA'),
+  zoomInB:()=>document.getElementById('zoomInB'),
+  zoomOutB:()=>document.getElementById('zoomOutB'),
+  zoomResetB:()=>document.getElementById('zoomResetB'),
+  zoomLabelB:()=>document.getElementById('zoomLabelB'),
 }
 function log(msg){
   const t=el.logBox()
   t.value+=msg+"\n"
   t.scrollTop=t.scrollHeight
 }
-function setCanvasImage(canvas,img){
+function setCanvasImage(canvas,img,zoom){
   const ctx=canvas.getContext('2d')
-  const maxW=canvas.parentElement.clientWidth-16
-  const maxH=Math.min(window.innerHeight*0.6,canvas.parentElement.clientHeight||window.innerHeight*0.6)
-  const ratio=Math.min(maxW/img.width,maxH/img.height,1)
-  const w=Math.max(1,Math.floor(img.width*ratio))
-  const h=Math.max(1,Math.floor(img.height*ratio))
+  const w=Math.max(1,Math.floor(img.width*zoom))
+  const h=Math.max(1,Math.floor(img.height*zoom))
   canvas.width=w
   canvas.height=h
   ctx.clearRect(0,0,w,h)
   ctx.drawImage(img,0,0,w,h)
-  return {w,h,ratio}
+  return {w,h,ratio:zoom}
 }
 let dispA=null,dispB=null
 function redrawA(){
   const c=el.canvasA()
   if(!state.imgA)return
-  dispA=setCanvasImage(c,state.imgA)
+  dispA=setCanvasImage(c,state.imgA,state.zoomA)
   drawPointsAndShapes(c,state.pointsA,dispA,true)
+  el.zoomLabelA().textContent=`縮放: ${Math.round(state.zoomA*100)}% | Zoom: ${Math.round(state.zoomA*100)}%`
 }
 function redrawB(){
   const c=el.canvasB()
   if(!state.imgB)return
-  dispB=setCanvasImage(c,state.imgB)
+  dispB=setCanvasImage(c,state.imgB,state.zoomB)
   drawPointsAndShapes(c,state.pointsB,dispB,false)
+  el.zoomLabelB().textContent=`縮放: ${Math.round(state.zoomB*100)}% | Zoom: ${Math.round(state.zoomB*100)}%`
 }
 function imgToCanvasCoord(origX,origY,disp){
   return {x:origX*disp.ratio,y:origY*disp.ratio}
@@ -80,35 +83,35 @@ function drawPointsAndShapes(canvas,points,disp,isA){
   if(points.length===2){
     const p1=imgToCanvasCoord(points[0].x,points[0].y,disp)
     const p2=imgToCanvasCoord(points[1].x,points[1].y,disp)
-    ctx.lineWidth=2
-    ctx.strokeStyle=isA?"red":"blue"
-    const dxImg=points[1].x-points[0].x
-    const dyImg=points[1].y-points[0].y
-    const pixD=Math.hypot(dxImg,dyImg)
-    let text=""
-    if(!isA){
-      text=`像素: ${pixD.toFixed(1)} px`
+  ctx.lineWidth=2
+  ctx.strokeStyle=isA?"red":"blue"
+  const dxImg=points[1].x-points[0].x
+  const dyImg=points[1].y-points[0].y
+  const pixD=Math.hypot(dxImg,dyImg)
+  let text=""
+  if(!isA){
+    text=`像素: ${pixD.toFixed(1)} px`
+    ctx.beginPath()
+    ctx.moveTo(p1.x,p1.y);ctx.lineTo(p2.x,p2.y);ctx.stroke()
+    drawText(ctx,text,(p1.x+p2.x)/2,(p1.y+p2.y)/2,canvas)
+  }else{
+    if(state.mode==="line"){
       ctx.beginPath()
       ctx.moveTo(p1.x,p1.y);ctx.lineTo(p2.x,p2.y);ctx.stroke()
+      if(state.scaleValue>0) text=`長度: ${(pixD*state.scaleValue).toFixed(2)} ${state.unit}`
+      else text=`長度: ${pixD.toFixed(1)} px`
       drawText(ctx,text,(p1.x+p2.x)/2,(p1.y+p2.y)/2,canvas)
     }else{
-      if(state.mode==="line"){
-        ctx.beginPath()
-        ctx.moveTo(p1.x,p1.y);ctx.lineTo(p2.x,p2.y);ctx.stroke()
-        if(state.scaleValue>0) text=`長度: ${(pixD*state.scaleValue).toFixed(2)} ${state.unit}`
-        else text=`長度: ${pixD.toFixed(1)} px`
-        drawText(ctx,text,(p1.x+p2.x)/2,(p1.y+p2.y)/2,canvas)
-      }else{
-        const r=Math.hypot(p2.x-p1.x,p2.y-p1.y)/2
-        ctx.beginPath()
-        ctx.arc((p1.x+p2.x)/2,(p1.y+p2.y)/2,r,0,Math.PI*2)
-        ctx.stroke()
-        if(state.scaleValue>0) text=`直徑: ${(pixD*state.scaleValue).toFixed(2)} ${state.unit}`
-        else text=`直徑: ${pixD.toFixed(1)} px`
-        drawText(ctx,text,(p1.x+p2.x)/2,(p1.y+p2.y)/2,canvas)
-      }
+      const r=Math.hypot(p2.x-p1.x,p2.y-p1.y)/2
+      ctx.beginPath()
+      ctx.arc((p1.x+p2.x)/2,(p1.y+p2.y)/2,r,0,Math.PI*2)
+      ctx.stroke()
+      if(state.scaleValue>0) text=`直徑: ${(pixD*state.scaleValue).toFixed(2)} ${state.unit}`
+      else text=`直徑: ${pixD.toFixed(1)} px`
+      drawText(ctx,text,(p1.x+p2.x)/2,(p1.y+p2.y)/2,canvas)
     }
   }
+}
 }
 function drawText(ctx,text,x,y,canvas){
   ctx.font="14px Arial"
@@ -145,6 +148,12 @@ function setMode(val){
   redrawA()
   updateDistLabels()
 }
+function zoomInA(){state.zoomA=state.zoomA*1.2; redrawA()}
+function zoomOutA(){state.zoomA=Math.max(0.05,state.zoomA/1.2); redrawA()}
+function zoomResetA(){state.zoomA=1.0; redrawA()}
+function zoomInB(){state.zoomB=state.zoomB*1.2; redrawB()}
+function zoomOutB(){state.zoomB=Math.max(0.05,state.zoomB/1.2); redrawB()}
+function zoomResetB(){state.zoomB=1.0; redrawB()}
 function setScale(){
   if(state.pointsB.length!==2){
     log("請在尺規圖片(B)上選兩點 | Select 2 points on B")
@@ -201,13 +210,19 @@ function init(){
   el.resetBtn().addEventListener('click',resetAll)
   el.clearA().addEventListener('click',clearA)
   el.clearB().addEventListener('click',clearB)
+  el.zoomInA().addEventListener('click',zoomInA)
+  el.zoomOutA().addEventListener('click',zoomOutA)
+  el.zoomResetA().addEventListener('click',zoomResetA)
+  el.zoomInB().addEventListener('click',zoomInB)
+  el.zoomOutB().addEventListener('click',zoomOutB)
+  el.zoomResetB().addEventListener('click',zoomResetB)
   el.fileA().addEventListener('change',e=>{
     const f=e.target.files[0]; if(!f)return
-    handleFile(f,(img)=>{state.imgA=img;state.pointsA=[];el.pointsA().textContent="已選點 (A): 0 | Selected Points (A): 0";redrawA();log("已加載圖片 (A) | Loaded image (A)")})
+    handleFile(f,(img)=>{state.imgA=img;state.pointsA=[];state.zoomA=1.0;el.pointsA().textContent="已選點 (A): 0 | Selected Points (A): 0";redrawA();log("已加載圖片 (A) | Loaded image (A)")})
   })
   el.fileB().addEventListener('change',e=>{
     const f=e.target.files[0]; if(!f)return
-    handleFile(f,(img)=>{state.imgB=img;state.pointsB=[];el.pointsB().textContent="已選點 (B): 0 | Selected Points (B): 0";redrawB();log("已加載尺規圖片 (B) | Loaded ruler (B)")})
+    handleFile(f,(img)=>{state.imgB=img;state.pointsB=[];state.zoomB=1.0;el.pointsB().textContent="已選點 (B): 0 | Selected Points (B): 0";redrawB();log("已加載尺規圖片 (B) | Loaded ruler (B)")})
   })
   el.canvasA().addEventListener('mousemove',e=>{
     if(!state.imgA||!dispA){el.coordA().textContent="鼠標坐標 (A): 未加載 | Mouse Coords (A): Not loaded";return}
@@ -244,5 +259,19 @@ function init(){
     if(state.pointsB.length===2)log("請輸入實際距離並設定比例尺 | Enter actual distance and set scale")
   })
   log("Application started")
+  enableDragScroll(el.wrapA())
+  enableDragScroll(el.wrapB())
 }
 window.addEventListener('load',init)
+function enableDragScroll(wrapper){
+  let isDown=false,startX=0,startY=0,scrollL=0,scrollT=0
+  wrapper.addEventListener('mousedown',e=>{isDown=true;startX=e.pageX;startY=e.pageY;scrollL=wrapper.scrollLeft;scrollT=wrapper.scrollTop})
+  window.addEventListener('mouseup',()=>{isDown=false})
+  window.addEventListener('mousemove',e=>{
+    if(!isDown)return
+    const dx=e.pageX-startX
+    const dy=e.pageY-startY
+    wrapper.scrollLeft=scrollL-dx
+    wrapper.scrollTop=scrollT-dy
+  })
+}
