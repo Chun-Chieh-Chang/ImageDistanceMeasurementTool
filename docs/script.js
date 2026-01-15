@@ -39,13 +39,18 @@ function log(msg){
 }
 function setCanvasImage(canvas,img,zoom){
   const ctx=canvas.getContext('2d')
-  const w=Math.max(1,Math.floor(img.width*zoom))
-  const h=Math.max(1,Math.floor(img.height*zoom))
+  const container=canvas.parentElement
+  const cw=Math.max(1,container.clientWidth)
+  const ch=Math.max(1,container.clientHeight)
+  const fitRatio=Math.min(cw/img.width, ch/img.height)
+  const ratio=Math.max(0.01, fitRatio*zoom)
+  const w=Math.max(1,Math.floor(img.width*ratio))
+  const h=Math.max(1,Math.floor(img.height*ratio))
   canvas.width=w
   canvas.height=h
   ctx.clearRect(0,0,w,h)
   ctx.drawImage(img,0,0,w,h)
-  return {w,h,ratio:zoom}
+  return {w,h,ratio}
 }
 let dispA=null,dispB=null
 function redrawA(){
@@ -53,7 +58,7 @@ function redrawA(){
   if(!state.imgA)return
   dispA=setCanvasImage(c,state.imgA,state.zoomA)
   drawPointsAndShapes(c,state.pointsA,dispA,true)
-  el.zoomLabelA().textContent=`縮放: ${Math.round(state.zoomA*100)}% | Zoom: ${Math.round(state.zoomA*100)}%`
+  el.zoomLabelA().textContent=`縮放: ${Math.round(dispA.ratio*100)}% | Zoom: ${Math.round(dispA.ratio*100)}%`
   const ov=el.overlayA(); ov.width=c.width; ov.height=c.height; ov.getContext('2d').clearRect(0,0,ov.width,ov.height)
 }
 function redrawB(){
@@ -61,7 +66,7 @@ function redrawB(){
   if(!state.imgB)return
   dispB=setCanvasImage(c,state.imgB,state.zoomB)
   drawPointsAndShapes(c,state.pointsB,dispB,false)
-  el.zoomLabelB().textContent=`縮放: ${Math.round(state.zoomB*100)}% | Zoom: ${Math.round(state.zoomB*100)}%`
+  el.zoomLabelB().textContent=`縮放: ${Math.round(dispB.ratio*100)}% | Zoom: ${Math.round(dispB.ratio*100)}%`
   const ov=el.overlayB(); ov.width=c.width; ov.height=c.height; ov.getContext('2d').clearRect(0,0,ov.width,ov.height)
 }
 function imgToCanvasCoord(origX,origY,disp){
@@ -294,6 +299,10 @@ function enableDragScroll(wrapper){
     wrapper.scrollTop=scrollT-dy
   })
 }
+window.addEventListener('resize',()=>{
+  if(state.imgA) redrawA()
+  if(state.imgB) redrawB()
+})
 function toggleFullscreen(){
   const isFs=document.body.classList.toggle('fullscreen')
   el.toggleFullBtn().textContent=isFs?"退出全屏 Exit Fullscreen":"全屏檢視 Fullscreen"
