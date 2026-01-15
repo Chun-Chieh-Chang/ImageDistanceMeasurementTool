@@ -40,8 +40,9 @@ function log(msg){
 function setCanvasImage(canvas,img,zoom){
   const ctx=canvas.getContext('2d')
   const container=canvas.parentElement
-  const cw=Math.max(1,container.clientWidth)
-  const ch=Math.max(1,container.clientHeight)
+  const rect=container.getBoundingClientRect()
+  const cw=Math.max(1,Math.floor(rect.width))
+  const ch=Math.max(1,Math.floor(rect.height || window.innerHeight*0.8))
   const fitRatio=Math.min(cw/img.width, ch/img.height)
   const ratio=Math.max(0.01, fitRatio*zoom)
   const w=Math.max(1,Math.floor(img.width*ratio))
