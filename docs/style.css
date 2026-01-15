@@ -15,7 +15,7 @@ main{padding:12px 16px}
 .paneHeader{display:flex;gap:8px;align-items:center;justify-content:space-between;padding:8px 10px;background:#fafbfc;border-bottom:1px solid #e6e8eb;flex-wrap:wrap}
 .zoomCtrl{display:flex;gap:8px;align-items:center}
 .zoomCtrl button{padding:4px 8px;border:1px solid #aaa;background:#fff}
-.canvasWrap{background:#f3f4f6;max-height:85vh;min-height:65vh;overflow:auto}
+.canvasWrap{background:#f3f4f6;max-height:90vh;min-height:70vh;overflow:auto}
 canvas{background:#dcdcdc;display:block}
 .paneFooter{display:flex;gap:16px;padding:8px 10px;background:#fafbfc;border-top:1px solid #e6e8eb;font-size:14px}
 .logSect{margin-top:12px}
@@ -23,3 +23,10 @@ canvas{background:#dcdcdc;display:block}
 footer{display:flex;justify-content:flex-end;align-items:center;padding:8px 16px;border-top:1px solid #e6e8eb}
 footer .author{display:flex;gap:8px;align-items:center;color:#555}
 footer img{width:36px;height:36px;border-radius:4px;object-fit:cover;background:#fff;border:1px solid #ddd}
+
+body.fullscreen header{display:none}
+body.fullscreen .controls{display:none}
+body.fullscreen .paneFooter{display:none}
+body.fullscreen .logSect{display:none}
+body.fullscreen footer{display:none}
+body.fullscreen .canvasWrap{max-height:94vh;min-height:90vh}

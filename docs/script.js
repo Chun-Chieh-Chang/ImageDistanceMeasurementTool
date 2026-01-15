@@ -8,6 +8,7 @@ const el={
   resetBtn:()=>document.getElementById('resetBtn'),
   clearA:()=>document.getElementById('clearA'),
   clearB:()=>document.getElementById('clearB'),
+  toggleFullBtn:()=>document.getElementById('toggleFullBtn'),
   fileA:()=>document.getElementById('fileA'),
   fileB:()=>document.getElementById('fileB'),
   canvasA:()=>document.getElementById('canvasA'),
@@ -210,6 +211,7 @@ function init(){
   el.resetBtn().addEventListener('click',resetAll)
   el.clearA().addEventListener('click',clearA)
   el.clearB().addEventListener('click',clearB)
+  el.toggleFullBtn().addEventListener('click',toggleFullscreen)
   el.zoomInA().addEventListener('click',zoomInA)
   el.zoomOutA().addEventListener('click',zoomOutA)
   el.zoomResetA().addEventListener('click',zoomResetA)
@@ -274,4 +276,10 @@ function enableDragScroll(wrapper){
     wrapper.scrollLeft=scrollL-dx
     wrapper.scrollTop=scrollT-dy
   })
+}
+function toggleFullscreen(){
+  const isFs=document.body.classList.toggle('fullscreen')
+  el.toggleFullBtn().textContent=isFs?"退出全屏 Exit Fullscreen":"全屏檢視 Fullscreen"
+  if(state.imgA) redrawA()
+  if(state.imgB) redrawB()
 }
