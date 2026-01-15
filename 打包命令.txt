@@ -1,0 +1,1 @@
+pyinstaller --onefile --noconsole --add-data "author_avatar.png:." --icon="app_icon.ico" image_distance_measurement.py
