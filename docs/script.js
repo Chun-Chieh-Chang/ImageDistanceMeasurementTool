@@ -39,10 +39,10 @@ function log(msg){
 }
 function setCanvasImage(canvas,img,zoom){
   const ctx=canvas.getContext('2d')
-  const container=canvas.parentElement
+  const container=canvas.parentElement.parentElement
   const rect=container.getBoundingClientRect()
-  const cw=Math.max(1,Math.floor(rect.width))
-  const ch=Math.max(1,Math.floor(rect.height || window.innerHeight*0.8))
+  const cw=Math.max(1,Math.floor(rect.width-20))
+  const ch=Math.max(1,Math.floor(rect.height-20))
   const fitRatio=Math.min(cw/img.width, ch/img.height)
   const ratio=Math.max(0.01, fitRatio*zoom)
   const w=Math.max(1,Math.floor(img.width*ratio))
@@ -51,6 +51,12 @@ function setCanvasImage(canvas,img,zoom){
   canvas.height=h
   ctx.clearRect(0,0,w,h)
   ctx.drawImage(img,0,0,w,h)
+  
+  // 同步更新 wrapper 的尺寸
+  const wrapper = canvas.parentElement
+  wrapper.style.width = w + 'px'
+  wrapper.style.height = h + 'px'
+  
   return {w,h,ratio}
 }
 let dispA=null,dispB=null
